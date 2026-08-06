@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#efe8da" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151209" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Songbook">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%8E%B8</text></svg>">
+<title>Songbook</title>
+<style>
+  :root{
+    --bg:#efe8da; --surface:#f8f3ea; --surface-2:#ece3d1; --text:#2a2416;
+    --dim:#71664f; --border:#dcd0b8; --accent:#a5711c; --accent-ink:#7a520f;
+    --chord:#a5711c; --ok:#5f7a3f; --shadow:24px 40px rgba(70,52,20,.12);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --lyric:20px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#151209; --surface:#211c12; --surface-2:#2a2418; --text:#ece2cd;
+      --dim:#a6977b; --border:#39311f; --accent:#e2b45c; --accent-ink:#f1cd7e;
+      --chord:#e6bc6a; --ok:#9cbb6f; --shadow:24px 44px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#151209; --surface:#211c12; --surface-2:#2a2418; --text:#ece2cd;
+    --dim:#a6977b; --border:#39311f; --accent:#e2b45c; --accent-ink:#f1cd7e;
+    --chord:#e6bc6a; --ok:#9cbb6f; --shadow:24px 44px rgba(0,0,0,.5);
+  }
+  :root[data-theme="light"]{
+    --bg:#efe8da; --surface:#f8f3ea; --surface-2:#ece3d1; --text:#2a2416;
+    --dim:#71664f; --border:#dcd0b8; --accent:#a5711c; --accent-ink:#7a520f;
+    --chord:#a5711c; --ok:#5f7a3f; --shadow:24px 40px rgba(70,52,20,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg);color:var(--text);font-family:var(--sans);
+    -webkit-text-size-adjust:100%;line-height:1.5;
+    min-height:100vh;
+  }
+  a{color:inherit}
+  button,input{font-family:inherit}
+  button{cursor:pointer}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px}
+
+  /* ---------- top bar ---------- */
+  header.top{
+    position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:saturate(1.2) blur(10px);border-bottom:1px solid var(--border);
+  }
+  .top .wrap{display:flex;align-items:center;gap:12px;height:60px}
+  .brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+  .brand .mark{font-size:20px}
+  .brand h1{font-family:var(--serif);font-weight:600;font-size:22px;margin:0;letter-spacing:.2px}
+  .brand .sub{font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .top .spacer{flex:1}
+  .iconbtn{
+    display:inline-grid;place-items:center;width:40px;height:40px;border-radius:12px;
+    border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:17px;
+    transition:transform .08s ease,background .15s ease;
+  }
+  .iconbtn:active{transform:scale(.94)}
+  .iconbtn.back{width:auto;padding:0 14px;gap:7px;font-family:var(--sans);font-size:14px;font-weight:600}
+
+  /* ---------- list ---------- */
+  main{padding-bottom:120px}
+  .listhead{padding:26px 0 10px}
+  .listhead .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .listhead p{margin:6px 0 0;color:var(--dim);font-size:14px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:16px 0 6px}
+  .search{
+    flex:1;min-width:180px;display:flex;align-items:center;gap:9px;
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:0 14px;height:46px;
+  }
+  .search input{border:0;background:transparent;outline:none;color:var(--text);font-size:16px;width:100%}
+  .search .mag{color:var(--dim)}
+  .tbtn{
+    height:46px;padding:0 16px;border-radius:14px;border:1px solid var(--border);background:var(--surface);
+    color:var(--text);font-weight:600;font-size:14px;white-space:nowrap;transition:transform .08s ease;
+  }
+  .tbtn:active{transform:scale(.96)}
+  .tbtn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+  :root[data-theme="dark"] .tbtn.accent,@media(prefers-color-scheme:dark){.tbtn.accent{color:#1a1508}}
+
+  ul.songs{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+  @media(min-width:620px){ul.songs{grid-template-columns:1fr 1fr}}
+  li.song{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:15px 16px;
+    display:flex;flex-direction:column;gap:5px;transition:transform .1s ease,border-color .15s ease;
+  }
+  li.song:hover{border-color:var(--accent)}
+  li.song:active{transform:scale(.99)}
+  .song .row1{display:flex;align-items:center;gap:9px}
+  .song .title{font-family:var(--serif);font-size:19px;font-weight:600;line-height:1.2}
+  .song .preview{color:var(--dim);font-size:13px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .chip{font:700 10px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:999px;border:1px solid var(--border);color:var(--dim)}
+  .chip.ita{color:var(--accent-ink);border-color:color-mix(in srgb,var(--accent) 45%,var(--border))}
+  .chip.chd{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,var(--border));display:inline-flex;gap:4px;align-items:center}
+  .empty{color:var(--dim);text-align:center;padding:50px 0;font-size:15px}
+
+  /* ---------- reader ---------- */
+  .reader{padding-top:8px}
+  .reader h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,7vw,36px);margin:14px 0 2px;line-height:1.1;text-wrap:balance}
+  .reader .rmeta{color:var(--dim);font-size:13px;margin-bottom:18px}
+  .subbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 18px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+  .subbar .grp{display:flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:3px}
+  .subbar .grp button{width:36px;height:34px;border:0;background:transparent;color:var(--text);font-size:15px;border-radius:9px}
+  .subbar .grp button:active{background:var(--surface-2)}
+  .subbar .lab{font-size:12px;color:var(--dim);padding:0 6px;min-width:38px;text-align:center}
+
+  .lyrics{font-family:var(--serif);font-size:var(--lyric);line-height:1.85;padding-bottom:40px}
+  .lyrics .sec{
+    font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin:26px 0 8px;
+  }
+  .lyrics .sec:first-child{margin-top:4px}
+  .lyrics .note{font-family:var(--sans);font-size:13px;color:var(--dim);font-style:italic;margin:2px 0}
+  .lyrics .gap{height:.9em}
+  .line{margin:0}
+  .line.plain{white-space:pre-wrap}
+  .line.chorded{display:flex;flex-wrap:wrap;align-items:flex-end;row-gap:.1em;margin:.05em 0}
+  .seg{display:inline-flex;flex-direction:column;justify-content:flex-end}
+  .seg .ch{font:700 .74em/1.25 var(--mono);color:var(--chord);letter-spacing:.01em;white-space:pre;min-height:1.35em}
+  .seg .ly{white-space:pre}
+
+  /* ---------- autoscroll dock ---------- */
+  .dock{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));
+    z-index:45;display:none;align-items:center;gap:12px;
+    background:var(--surface);border:1px solid var(--border);border-radius:999px;
+    padding:8px 8px 8px 8px;box-shadow:0 var(--shadow);width:min(440px,calc(100% - 32px));
+  }
+  .dock.show{display:flex}
+  .play{
+    flex:none;width:48px;height:48px;border-radius:50%;border:0;background:var(--accent);color:#fff;
+    font-size:18px;display:grid;place-items:center;transition:transform .08s ease;
+  }
+  :root[data-theme="dark"] .play{color:#1a1508}
+  @media(prefers-color-scheme:dark){.play{color:#1a1508}}
+  .play:active{transform:scale(.92)}
+  .dock .speed{flex:1;display:flex;align-items:center;gap:9px;padding-right:8px}
+  .dock .speed span{font-size:11px;color:var(--dim);white-space:nowrap}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:99px;background:var(--surface-2);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);border:2px solid var(--surface);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:18px;height:18px;border:2px solid var(--surface);border-radius:50%;background:var(--accent);cursor:pointer}
+
+  /* ---------- editor overlay ---------- */
+  .overlay{position:fixed;inset:0;z-index:60;background:var(--bg);display:none;flex-direction:column}
+  .overlay.show{display:flex}
+  .ohead{border-bottom:1px solid var(--border)}
+  .ohead .wrap{display:flex;align-items:center;gap:12px;height:60px}
+  .ohead h3{font-family:var(--serif);font-size:18px;margin:0;flex:1}
+  .obody{flex:1;overflow:auto}
+  .obody .wrap{padding:18px 20px 40px}
+  .field{display:block;margin-bottom:14px}
+  .field .l{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:7px}
+  .field input,.field textarea{
+    width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--text);
+    padding:12px 14px;font-size:16px;outline:none;
+  }
+  .field input:focus,.field textarea:focus{border-color:var(--accent)}
+  .field textarea{font-family:var(--mono);font-size:14px;line-height:1.7;min-height:52vh;resize:vertical;white-space:pre;overflow-wrap:normal;overflow-x:auto}
+  .help{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--dim);margin-bottom:16px;line-height:1.6}
+  .help code{font-family:var(--mono);color:var(--accent-ink);background:color-mix(in srgb,var(--accent) 14%,transparent);padding:1px 5px;border-radius:5px}
+  .obtns{display:flex;flex-wrap:wrap;gap:10px}
+  .obtns .grow{flex:1}
+  .danger{color:#c0492b;border-color:color-mix(in srgb,#c0492b 40%,var(--border))}
+  :root[data-theme="dark"] .danger,@media(prefers-color-scheme:dark){.danger{color:#e78a6f}}
+
+  .toast{
+    position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(10px);
+    background:var(--text);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;
+    opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;z-index:70;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .hidden{display:none!important}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <button class="iconbtn back hidden" id="backBtn" aria-label="Indietro">‹ Canzoni</button>
+    <div class="brand" id="brand">
+      <span class="mark">🎸</span>
+      <h1>Songbook</h1>
+      <span class="sub" id="brandSub">20 canzoni</span>
+    </div>
+    <div class="spacer"></div>
+    <button class="iconbtn" id="themeBtn" aria-label="Tema">◐</button>
+  </div>
+</header>
+
+<main class="wrap" id="main"></main>
+
+<div class="dock" id="dock">
+  <button class="play" id="playBtn" aria-label="Autoscroll">▶</button>
+  <div class="speed">
+    <span>Autoscroll</span>
+    <input type="range" id="speed" min="8" max="150" step="2" value="40" aria-label="Velocità">
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="ohead"><div class="wrap">
+    <h3 id="edTitleH">Modifica</h3>
+    <button class="tbtn" id="edCancel">Annulla</button>
+    <button class="tbtn accent" id="edSave">Salva</button>
+  </div></div>
+  <div class="obody"><div class="wrap">
+    <div class="help">
+      Accordi: scrivi <code>[G]</code> subito prima della parola dove cambia l'accordo, es. <code>[G]I feel it [Em]lifting</code>. Vengono mostrati in oro sopra il testo.<br>
+      Sezioni: una riga da sola come <code>[Verse 1]</code>, <code>[Chorus]</code>, <code>[Bridge]</code> diventa un'etichetta.
+    </div>
+    <label class="field"><span class="l">Titolo</span><input id="edTitle" type="text" autocomplete="off"></label>
+    <label class="field"><span class="l">Testo e accordi</span><textarea id="edBody" spellcheck="false"></textarea></label>
+    <div class="obtns">
+      <button class="tbtn" id="edRestore">↺ Ripristina originale</button>
+      <button class="tbtn danger" id="edDelete">Elimina canzone</button>
+    </div>
+  </div></div>
+</div>
+
+<input type="file" id="importFile" accept="application/json,.json" class="hidden">
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============================ DATI ============================ */
+const DEFAULT_SONGS = [
+  {id:"a-new-beginning",lang:"en",title:"A New Beginning",body:
+`I feel it lifting all my being
+the sound is rising from within
+My voice is singing loud and strong
+inviting you to sing along
+The waves are sweeping all the pain
+We're breaking free from every chain
+at last we are answering the call
+'cause you and I we are one with all
+
+The golden light was always there
+We only had to truly dare
+To walk the path and make it home
+loving all and chanting Om
+
+This ancient force is all around
+it's made of light, of love and sound
+connecting all that's near and far
+reminding us of who we are
+The rhythm flows and breaks the night
+Unfolds the truth, reveals the light
+In cosmic dance we rise and fall
+'cause you and I we are one with all
+
+The golden light was always there
+We only had to truly dare
+To walk the path and make it home
+loving all and chanting Om`},
+
+  {id:"blessed-you-are",lang:"en",title:"Blessed You Are",body:
+`[Verse 1]
+I know your searching too
+Another way, another day, another mood,
+But even your mistakes
+Are there to teach you how to fix whatever breaks
+No need to clench your fist
+The little things risk to get lost into the mist
+Look around
+There so much life and treasures coming from the ground
+
+[Chorus]
+Blessed you are
+When you desire
+What you've already got
+No need to travel far
+You are your rainbow
+And your own golden pot
+
+[Verse 2]
+Feel the heat
+Your heart is beating as you're dancing on your feet
+Spread your wings
+There are no limits to what the universe can bring
+Hold my hand
+The best adventures are the ones you never plan
+Welcome home
+Do you remember that you are never here alone
+
+[Chorus]
+Blessed you are
+When you desire
+What you've already got
+No need to travel far
+You are your rainbow
+And your own golden pot`},
+
+  {id:"can-you-see-the-light-within",lang:"en",title:"Can You See the Light Within",body:
+`Can you see the light within
+Showing the way to your destiny
+All you are is energy
+Trying to recover its memory
+Let your soul awaken and rise
+Believe in yourself and open your eyes
+If you are waiting this is the sign
+Time to open your heart, together we shine
+
+I've always looked outside of me
+Searching for serenity
+Waiting for some entity
+To give me an identity
+Until I felt the eternity
+Beyond my own mortality
+I'm part of the divinity
+Existing throughout infinity
+
+The source of all prosperity
+Is your own positivity
+Looking for opportunity
+To turn into possibility
+Welcoming creativity
+Sharing your ability
+Letting your vitality
+Take you towards your victory
+
+Living in duality
+Seeking spirituality
+Working with integrity
+For peace in its totality
+The roots of our community
+Are peace, respect and unity
+Truthful solidarity
+And everyone's self authority`},
+
+  {id:"cloud-animals",lang:"en",title:"Cloud Animals",body:
+`[Verse 1]
+I'm lying in the grass beneath the open sky,
+watching as the animals drift slowly by.
+A lion made of vapor lets out a silent roar,
+a whale swims through the heavens like it's done before.
+I used to only see the clouds and nothing more,
+but now I understand what all this light is for.
+
+[Chorus]
+Look up and let your mind create,
+the life you dream is never too late.
+You hold the brush, you paint the scene,
+the world becomes whatever you believe.
+What you imagine starts to grow,
+you are the dreamer, you make it so.
+
+[Verse 2]
+A dragon breathes its fire through the afternoon,
+a butterfly of silver dances with the moon.
+The universe is canvas and your thoughts are paint,
+turning all your fears to flowers, all your doubt to grace.
+The world bends gently towards the vision that you hold,
+so let the story of your life be daring and be bold.
+
+[Chorus]
+Look up and let your mind create,
+the life you dream is never too late.
+You hold the brush, you paint the scene,
+the world becomes whatever you believe.
+What you imagine starts to grow,
+you are the dreamer, you make it so.
+
+[Bridge]
+Every cloud was once a thought that drifted through your mind,
+every joy was born from something you were brave enough to find.
+The universe is listening to everything you say,
+so speak your vision into life and watch it find its way.
+
+[Chorus]
+Look up and let your mind create,
+the life you dream is never too late.
+You hold the brush, you paint the scene,
+the world becomes whatever you believe.
+What you imagine starts to grow,
+you are the dreamer, you make it so.`},
+
+  {id:"come-to-wanderlust",lang:"en",title:"Come to Wanderlust",body:
+`Come with us to Wanderlust tonight
+Let's all come together into the light
+Close your eyes and feel the spark
+Shining bright into the park
+Of a thousand loving hearts beating as one
+
+Come with us to Wanderlust today
+Let's all flow together and find the way
+Can you feel our connection
+Can you see your own direction
+It's the true north calling you to find yourself
+
+Come with us to Wanderlust once more
+Let's all dance to the music and hit the floor
+Stomp your feet onto the ground
+Hold my hand and make a sound
+Chanting om and elevating each other up`},
+
+  {id:"endless-love",lang:"en",title:"Endless Love",body:
+`Searching for the light within, ready for the embrace,
+Welcoming the essence, and the blessing of our grace.
+And from the darkest shadows, we'll always rise above,
+As our soul illuminates our path with endless love.
+
+walking through the madness, we are searching for the light,
+For that flame within us, that guide us through the night.
+Seeking truth and wisdom and the radiance from within,
+step by step a journey of a new life begins.
+
+With every step we take, we get closer to the source,
+following the beacon, that's guiding our course.
+and even in the scariest storm we never lose our way,
+nurtured and protected from the light that never sway.
+
+accepting our nature and stepping in the light
+awakening our strength and showing our might.
+For all of us are vessels of a radiant divine,
+reflected in the universe and it's wonderful design.
+
+Searching for the light within, ready for the embrace,
+Welcoming the essence, and the blessing of our grace.
+And from the darkest shadows, we'll always rise above,
+As our soul illuminates our path with endless love.`},
+
+  {id:"everything-will-go-my-way",lang:"en",title:"Everything Will Go My Way",body:
+`Running free, hands into the wind
+Finding guidance from the voice within
+Feel the sunshine glowing on my skin
+I am ready to let my life begin
+
+I don't need to see the ending
+I don't need a map
+I am lucky every moment
+Of my life
+I am loved and protected
+Blessed from up above
+And I know everything
+Will go my way
+
+Cloudless skies above the open road
+I leave behind the weight I used to hold
+Every step feels lighter than before
+Getting further from all I've ever known
+
+I don't need to see the ending
+I don't need a map
+I am lucky every moment
+Of my life
+I am loved and protected
+Blessed from up above
+And I know everything
+Will go my way
+
+Heart wide open, standing in the light
+I spread my wings I am ready for the flight
+Every fear is fading out of sight
+Diving in I know I'll be alright
+
+I don't need to see the ending
+I don't need a map
+I am lucky every moment
+Of my life
+I am loved and protected
+Blessed from up above
+And I know everything
+Will go my way`},
+
+  {id:"im-proud-of-you",lang:"en",title:"I'm Proud of You",body:
+`You made it through, you're safe and sound,
+You faced the storm and always tried to hold your ground.
+In a crowded room, you tried to explain,
+Your heart was out but no one ever saw your pain.
+You held your breath, you hid your fears,
+You carried hope while diving deep inside your tears.
+The nights were long, your mind would race,
+But I can see the darkness never stole your grace.
+
+And if I never told you, then let me say it now,
+You turned your pain to strength, without you even knowing how.
+Every weight you carry and every step you take,
+Every scar is proof your soul can bend but never break.
+
+And I am proud of you
+For all the times you were afraid but you went through
+And you are not alone
+There is no need to face this always on your own
+And we will find a way
+Walk through the darkness of the night into the day
+
+You thought that help was for the weak,
+So you stayed silent while the world was turning bleak.
+You carried all the weight alone,
+Forgetting hearts were never meant to turn to stone.
+You hid the cracks behind your smile,
+You masked your demons but it worked only for a while.
+The healing starts when you let it go,
+Letting patiently the light inside you grow.
+
+And if I never told you, then let me say it now,
+You turned your pain to strength, without you even knowing how.
+Every weight you carry and every step you take,
+Every scar is proof your soul can bend but never break.
+
+And I am proud of you
+For all the times you were afraid but you went through
+And you are not alone
+There is no need to face this always on your own
+And we will find a way
+Walk through the darkness of the night into the day`},
+
+  {id:"in-the-silence",lang:"en",title:"In the Silence",body:
+`Title: In the Silence
+Language: English
+Meter: 8 syllables, AABB couplets
+Theme: Silence as a gift for self-knowledge — the space where we hear our own truth
+
+Chords — Verses: G — Em — C — D (last line: G → E → Am)
+Chords — Chorus: Am — Dm — E — Am
+
+[Verse 1]
+I used to feel an empty space
+A misty shadow on my face
+My heart was heavy in my chest
+I could not sleep I could not rest
+My mind was racing all the time
+From thought to thought from rhyme to rhyme
+Until a silence never seen before
+One day came knocking on my door
+
+[Chorus]
+In the silence I can finally see
+The person that I'm meant to be
+In the silence, in the deep
+My soul can rest my mind can sleep
+In the silence I can embrace
+All my darkness and all my grace
+In the silence I feel at home
+'Cause I remember I'm never alone
+
+[Verse 2]
+I felt the whole world in my soul
+No need to fight, to be in control
+I'm just a tiny little kite
+Among another million in the light
+A weaving thread in a canopy
+A little droplet in the sea
+I am a mess and a masterpiece
+Sitting silently in peace
+
+[Chorus]
+In the silence I can finally see
+The person that I'm meant to be
+In the silence, in the deep
+My soul can rest my mind can sleep
+In the silence I can embrace
+All my darkness and all my grace
+In the silence I feel at home
+'Cause I remember I'm never alone
+
+[Verse 3]
+If sometimes you're lost like me
+You are feeling lost, down on your knees
+When the future looks grim and dark
+And you need help to light your spark
+Listen closely and you will find
+In a quiet place inside your mind
+Where all the troubles of the day
+Are just a memory far away
+
+[Chorus]
+In the silence I can finally see
+The person that I'm meant to be
+In the silence, in the deep
+My soul can rest my mind can sleep
+In the silence I can embrace
+All my darkness and all my grace
+In the silence I feel at home
+'Cause I remember I'm never alone`},
+
+  {id:"little-one",lang:"en",title:"Little One",body:
+`[Verse 1]
+I see you in the corner trying hard to disappear,
+six years old and learning that the world felt cold and unclear.
+You told yourself you were extra, that your presence was a weight,
+that no one really needed you, that you had come too late.
+You made yourself so small that you could barely hear your name,
+not knowing you were never, ever meant to play a smaller game.
+
+[Chorus]
+I am so proud of you,
+without the boy you were I never would have made it through.
+You were never extra, never in the way,
+you are the whole reason I am standing here today.
+Thank you for the light you kept when all was dark,
+thank you for the music living in your heart.
+
+[Verse 2]
+The silence that surrounded you became a place to sing,
+you didn't know the gift you held or all that it would bring.
+A melody was growing in the quiet of your chest,
+reminding you that being here was always for the best.
+Each note you hummed alone at night became a road back home,
+a song you'd one day give to all who felt they were alone.
+
+[Chorus]
+I am so proud of you,
+without the boy you were I never would have made it through.
+You were never extra, never in the way,
+you are the whole reason I am standing here today.
+Thank you for the light you kept when all was dark,
+thank you for the music living in your heart.
+
+[Bridge]
+I know you asked the mirror if there was a reason why,
+I know the nights were heavy and you tried so hard not to cry.
+But here I am, I'm standing in the answer to your prayer,
+everything I am today was built because you dared to stay.
+
+[Chorus]
+I am so proud of you,
+without the boy you were I never would have made it through.
+You were never extra, never in the way,
+you are the whole reason I am standing here today.
+Thank you for the light you kept when all was dark,
+thank you for the music living in your heart.`},
+
+  {id:"luna-luna-io-ti-chiamo",lang:"it",title:"Luna Luna Io Ti Chiamo",body:
+`Luna Luna io ti chiamo,
+sali in cielo piano piano.
+Luna Luna stai vicino,
+e illumina il mio cammino.
+Luna Luna misteriosa,
+porta luce in ogni cosa.
+Luna Luna sul sentiero
+mostra il bello, il giusto e il vero.
+
+Quando il buio avvolge il mondo
+e sembra di toccare il fondo.
+Guardo in alto e vedo il viso
+della luna e il suo sorriso.
+Sembra che mi voglia dire:
+"Ora è il tempo di fluire.
+Lascia andare il tuo passato,
+ringraziando ciò che è stato."
+
+Quando il sole va a dormire
+cerco luce all'imbrunire.
+Chiedo solo una fiammella,
+a lei che splende così bella.
+Lei mi dice: "Nel tuo cuore
+arde il fuoco dell'amore.
+Allontana la paura
+e brilla nella notte oscura."
+
+Quando trovo la mia strada
+e la nebbia si dirada.
+Mi ricordo del suo aiuto
+e con grazia la saluto.
+"Grazie a te che mi hai guarito,
+ascoltato e accudito.
+Sempre io ti sarò grato,
+per avermi liberato."`},
+
+  {id:"shabat-shalom",lang:"en",title:"Shabat Shalom",body:
+`Shabat shalom
+Everybody brings some food
+Shabat shalom
+Everybody is in the mood
+Nerot ve iain
+Everybody is feeling fine
+Beteavon
+We're gonna sing until the dawn
+
+It's our favorite time of the week
+No matter if you are jewish or italian or greek
+We gather around to spend some family time
+The food is amazing and the company sublime
+Together we dance and we sing under our the stars
+Accompanied by melodies of flute and guitars
+
+Shabat shalom
+Everybody brings some food
+Shabat shalom
+Everybody is in the mood
+Nerot ve iain
+Everybody is feeling fine
+Beteavon
+We're gonna sing until the dawn
+
+This is the moment that we've all been waiting forward
+Whenever we are together we are healing more and more
+Cats and dogs are all around
+Looking for attention and for crumbles on the ground
+Playing with one another and howling at the moon
+Shabat is almost over but there's another very soon`},
+
+  {id:"shaman-bay",lang:"it",title:"Shaman Bay",body:
+`Prendi il vino e canta con noi
+Fatti un bel bagno se lo vuoi
+se sei stressato è tutto ok
+fai un salto a Shaman bay
+Shaman bay
+ti aspettiamo a shaman bay
+
+c'è una spiaggia molto speciale
+ai piedi dell'aso, sul litorale
+dove poeti, pirati e sciamani
+da tutti i colli marchigiani
+si trovano spesso per festeggiare
+per stare insieme vicino al mare
+passando il tempo con gli amici
+scambiandosi consigli e buoni auspici
+
+in questo spazio costruito col legno,
+con tanto amore e con tanto impegno
+tutto ordinato e molto pulito
+sempre protetto e accudito
+si canta in coro, si beve e si balla
+si prende un po' il sole e si gioca a palla
+qui le serate non finiscono mai
+se vieni anche un secondo poi non te ne vai
+
+se passi in bici o mentre passeggi
+fermati un attimo molla gli ormeggi
+fai una pausa e conosci la gente
+in questa atmosfera così accogliente
+nessuna anima qui è sconosciuta
+ogni persona è benvenuta
+se non ci fosse non so come farei
+grazie al cielo c'è shaman bay`},
+
+  {id:"shine-again",lang:"en",title:"Shine Again",body:
+`Waves are calling from afar,
+Reminding us of who we are.
+Diving deep but reaching high,
+Towards the sun into the sky.
+Dancing barefoot in the trees,
+Singing softly in the breeze.
+Breathing life into the wild,
+Awakening our inner child.
+
+So much more than fading bodies,
+Broken dreams and good old stories.
+We are made of light, of love and sound
+We are torn and mended, lost and found.
+Hold me close, I hear the calling,
+Through the night, the stars are falling.
+Through the silence, through the rain,
+I find my light to shine again.
+
+In my heart, I start to see,
+The truth that shines inside of me.
+With every step, I must be strong,
+To find the place where I belong.
+Ancient wisdom guides my way,
+The night dissolves into the day.
+No more fear, no more fights,
+Only morning shining lights.
+
+So much more than fading bodies,
+Broken dreams and good old stories.
+We are made of light, of love and sound
+We are torn and mended, lost and found.
+Hold me close, I hear the calling,
+Through the night, the stars are falling.
+Through the silence, through the rain,
+I find my light to shine again.`},
+
+  {id:"tell-me-a-story",lang:"en",title:"Tell Me a Story",body:
+`Tell me a story sing it like a lullaby
+Whisper it softly so I that can close my eyes
+Like a thousand fireflies into the darkness bring the light
+Don't be afraid because I know we'll always make it through the night
+A million times or more I fell with my face into the ground
+Just like a lonely tree in a forest no one ever heard the sound
+no matter what I've got myself back on my feet every single time
+Shaking it off and moving forward putting a together another rhyme
+
+Stay close to me
+Let's fly together above the summit of the highest tree
+We are finally free
+to be the purest form of whatever we choose to be
+
+Call onto my name so I can open up my eyes
+I need you to wake me from the slumber and to free me from my ties
+There's nothing in life we should ever dread be joyful and open and brave instead
+This journey's still long so many miles to tread so much to be learned so many words to be said
+I'm doing my best to remember and to help you never forget
+To cherish our time and every breath we take, every song that we sang and every person we met
+every tear that we lost and every smile that we give
+every time we choose love and every time we forgive
+
+Stay close to me
+Let's fly together above the summit of the highest tree
+We are finally free
+to be the purest form of whatever we choose to be`},
+
+  {id:"the-garden",lang:"en",title:"The Garden",body:
+`I don't chase butterflies no more,
+don't ask myself what i'm living for.
+I'm planting flowers, one by one,
+And sit beneath the setting sun.
+I'm tired of running and fall behind
+instead i found my peace of mind
+here in the garden where i stand
+not meant for others to understand
+
+And in the garden that I grow,
+The seeds of love begin to show.
+I feel the essence of my soul,
+the flowing life that makes me whole.
+Not all I want will come my way,
+Not every dream is meant to stay.
+But when i bloom in truth and grace,
+What's meant for me will find this place.
+
+The winds may shift, the seasons change,
+what is familiar will be strange.
+No need to chase or beg or fight,
+I'm dancing here with my delight.
+And if no butterflies appear,
+There's still a garden growing here.
+I don't need glory, I don't need fame,
+those meant to find me will know my name.
+
+And in the garden that I grow,
+The seeds of love begin to show.
+I feel the essence of my soul,
+the flowing life that makes me whole.
+Not all I want will come my way,
+Not every dream is meant to stay.
+But when i bloom in truth and grace,
+What's meant for me will find this place.`},
+
+  {id:"walking-towards-the-light",lang:"en",title:"Walking Towards the Light",body:
+`I'm alone in the dark
+With my fears taking over me
+I am struggling to survive
+Just to find a way to be
+Staring at the ceiling from my bed
+With the voices in my head
+Telling me I'm not enough
+To give up, run away and cry
+Telling me there is no hope
+That I shouldn't even try
+
+But then I listen to my heart
+And I remember I'm alive
+I can make it on my own
+I can find the will to thrive
+To be brave in what I choose
+As I'm walking towards the light
+
+I can feel it in my soul
+I can feel it in my skin
+There's a fire burning up
+Shining endlessly within
+Giving me the strength to carry on
+Giving me some light before the dawn
+Reminding me my journey has no end
+To let go as I ascend
+
+So I get rid of what is old
+All my pain and all my fears
+And I begin to elevate
+As my sadness disappears
+Now the darkness fades away
+I have made it through the night
+I forgive myself and smile
+As I'm walking towards the light
+
+Now the sun is high above
+Shining light upon my way
+Filling me with hope and joy
+For the dawn of another day
+I promise to myself I'll do my best
+I'll listen to my heart beating in my chest
+I'll always give best that I can give
+Helping others to believe
+
+There is no more need to fight
+I left my demons in the past
+There's no more obstacles ahead
+No more shadows to contrast
+I am flowing in the sun
+Everything around is bright
+I can feel already home
+As I'm walking towards the light`},
+
+  {id:"what-i-learned",lang:"en",title:"What I Learned",body:
+`I was dissolving in the light when suddenly I heard a sound
+a gentle voice was whispering inside of me an all around
+it's been a long and weary road, I've waited years for your return
+so tell me son, along the way what are the lessons that you've learned
+you said to love my enemies, 'cause hatred turns free men to slaves
+the very worst of them was me, so that's the first one I forgave
+you cannot heal by hiding darkness, burying sorrow, ignoring pain
+but when you let your heart forgive, you'll find the strength to love again
+
+if you can keep your mind in silence truth will always rise
+the beauty that you see around it's painted through your eyes
+the words we speak about another only tell us who we are
+doesn't mean their cross is lighter just because they carry it far
+never climb a mountain to show the world that you can shine
+you are already one with all, you are a part of the divine
+reach the summit not for glory, but to see the entire world
+and these are just a few of all the lessons that I learned
+
+the road to heaven feels like hell, the one to hell like paradise
+purposeless men chase the pleasure of the devil in disguise
+when the wait takes a little longer, then the prize is even higher
+chasing after many things will never bring what you desire
+don't blame the one who lost his way but tries to lead you anyway
+an eagle born inside a cage will rather walk than fly away
+for what we think is what we are and what we are is how we act
+cats who dream to roar like lions don't go chasing after rats
+
+if you can keep your mind in silence truth will always rise
+the beauty that you see around it's painted through your eyes
+the words we speak about another only tell us who we are
+doesn't mean their cross is lighter just because they carry it far
+never climb a mountain to show the world that you can shine
+you are already one with all, you are a part of the divine
+reach the summit not for glory, but to see the entire world
+and these are just a few of all the lessons that I learned
+
+Raise your words and not your voice, let the rain make flowers grow
+be a warrior in a garden, not a gardener in a war
+right is right if no one does it wrong is wrong even when all do
+be compassionate with others, it's the first time they are living too
+don't judge others by their actions if you judge yours by intent
+if you are not grateful for your life then you can never be content
+you must carry your own water and learn the value of every drop
+even years of sunshine cannot turn deserts into crops
+
+if you can keep your mind in silence truth will always rise
+the beauty that you see around it's painted through your eyes
+the words we speak about another only tell us who we are
+doesn't mean their cross is lighter just because they carry it far
+never climb a mountain to show the world that you can shine
+you are already one with all, you are a part of the divine
+reach the summit not for glory, but to see the entire world
+and these are just a few of all the lessons that I learned`},
+
+  {id:"you-can-always-count-on-me",lang:"en",title:"You Can Always Count on Me",body:
+`When we first have met under the branches of an old tree
+Our souls were young and our spirits free
+We were seeking each other with a spark in our eyes
+Like the stars at dusk firing up into the sky
+Walking through the forest across the river and by the streams
+Facing every adventure we live the life of our dreams
+
+And I can always count on you and you can count on me
+Cause you know I'll be there for you and you'll be there for me
+And forever we will stand as one in the middle of the storm
+Cause our love burns like a fire and will always keep us warm
+And together we will sail across every ocean and every sea
+Cause you know I was made for you and you were made for me
+
+For every seed we planted thousands flowers have come and bloomed
+Surrounding us with colors and with ravishing perfumes
+This world we have created cannot ever be torn apart
+Cause everything we did together came from our heart
+And we will smile again and forever until our hair is white
+Remembering the songs we sang holding each other tight
+
+And I can always count on you and you can count on me
+Cause you know I'll be there for you and you'll be there for me
+And forever we will stand as one in the middle of the storm
+Cause our love burns like a fire and will always keep us warm
+And together we will sail across every ocean and every sea
+Cause you know I was made for you and you were made for me
+
+No matter how much time goes by how many seasons pass
+We'll always play together rolling happily in the grass
+Like children building castles in the sand washed by the tide
+When we are tired we will take a rest close by each other's side
+And no matter how hard it gets we will always make it through
+Cause I know you are in love with me and I'm in love with you
+
+And I can always count on you and you can count on me
+Cause you know I'll be there for you and you'll be there for me
+And forever we will stand as one in the middle of the storm
+Cause our love burns like a fire and will always keep us warm
+And together we will sail across every ocean and every sea
+Cause you know I was made for you and you were made for me`},
+
+  {id:"you-must-be-an-angel",lang:"en",title:"You Must Be an Angel",body:
+`We've known each other for a million years
+And we have shared so many joys and tears
+I am so grateful for the time together
+And I am sure our love will last forever
+In all my life I've never met somebody like you
+Healing my wounds to get me up again like new
+
+You tell stories of wisdom, compassion and love
+You fly high like an eagle, but you are sweet like a dove
+The magic sound of your voice is gentle and pure
+And there's no illness its wonders ain't able to cure
+You bring light to the darkness and joy to the spirit
+You are an infinite being and your soul has no limit
+
+Every time that you smile you bring joy to the place
+I feel blessed and inspired when I look at your face
+You turn rain into sunshine when you laugh from your heart
+And I can trust that our souls will be never apart
+You grow faith into me and you make me believe
+That with you by my side there's nothing I can't achieve
+
+So you must be an angel, a creature of light
+Shining bright like a star, guiding me through the night
+So you must be an angel, singing with grace
+And I find my redemption in your loving embrace
+So you must be an angel healing sorrow and pain
+And I'll be always with you dancing under the rain
+So you must be an angel the most wonderful one
+And I'll be always with you dancing under the sun`}
+];
+
+/* ============================ STORAGE ============================ */
+const SKEY="mysongs.songs.v1", PKEY="mysongs.prefs.v1";
+function clone(o){return JSON.parse(JSON.stringify(o));}
+let songs=[], prefs={theme:"auto",size:20,speed:40};
+
+function loadAll(){
+  try{prefs=Object.assign(prefs,JSON.parse(localStorage.getItem(PKEY)||"{}"));}catch(e){}
+  let saved=null;
+  try{saved=JSON.parse(localStorage.getItem(SKEY));}catch(e){}
+  if(Array.isArray(saved)&&saved.length){
+    songs=saved;
+    // aggiungi eventuali canzoni di default nuove non ancora salvate
+    const ids=new Set(songs.map(s=>s.id));
+    DEFAULT_SONGS.forEach(d=>{if(!ids.has(d.id))songs.push(clone(d));});
+  }else{
+    songs=DEFAULT_SONGS.map(clone);
+  }
+}
+function saveSongs(){try{localStorage.setItem(SKEY,JSON.stringify(songs));}catch(e){}}
+function savePrefs(){try{localStorage.setItem(PKEY,JSON.stringify(prefs));}catch(e){}}
+
+/* ============================ CHORD PARSING ============================ */
+const CHORD_RE=/^[A-G](##|bb|#|b)?(maj|min|dim|aug|sus|add|m|M|\+)?\d{0,2}(sus[24]|add\d{1,2})?((#|b)\d{1,2})*(\/[A-G](#|b)?)?$/;
+function isChord(t){t=t.trim();return t.length>0&&t.length<=12&&CHORD_RE.test(t);}
+function hasChords(body){
+  return body.split("\n").some(line=>{
+    const t=line.trim();
+    if(/^\[.+\]$/.test(t)) return false; // riga-sezione
+    let m,re=/\[([^\]]+)\]/g;
+    while((m=re.exec(line))!==null){if(isChord(m[1]))return true;}
+    return false;
+  });
+}
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
+
+function parseLyricLine(line){
+  const matches=[]; let m,re=/\[([^\]]+)\]/g;
+  while((m=re.exec(line))!==null) matches.push(m);
+  if(!matches.length) return null; // niente accordi -> riga semplice
+  const segs=[];
+  const lead=line.slice(0,matches[0].index);
+  if(lead) segs.push({chord:"",text:lead});
+  for(let i=0;i<matches.length;i++){
+    const inner=matches[i][1];
+    const start=matches[i].index+matches[i][0].length;
+    const end=(i+1<matches.length)?matches[i+1].index:line.length;
+    const text=line.slice(start,end);
+    if(isChord(inner)) segs.push({chord:inner.trim(),text:text});
+    else segs.push({chord:"",text:"["+inner+"]"+text});
+  }
+  return segs;
+}
+
+function renderLyrics(body){
+  const out=[];
+  body.split("\n").forEach(raw=>{
+    const t=raw.trim();
+    if(t===""){out.push('<div class="gap"></div>');return;}
+    const secMatch=t.match(/^\[(.+)\]$/);
+    if(secMatch){
+      if(isChord(secMatch[1])){
+        out.push('<div class="line chorded"><span class="seg"><span class="ch">'+esc(secMatch[1])+'</span><span class="ly"> </span></span></div>');
+      }else{
+        out.push('<div class="sec">'+esc(secMatch[1])+'</div>');
+      }
+      return;
+    }
+    if(/^(Title|Language|Meter|Theme|Chords)\b/i.test(t)){
+      out.push('<div class="note">'+esc(raw)+'</div>');return;
+    }
+    const segs=parseLyricLine(raw);
+    if(!segs){out.push('<div class="line plain">'+esc(raw)+'</div>');return;}
+    let html='<div class="line chorded">';
+    segs.forEach(s=>{
+      html+='<span class="seg"><span class="ch">'+esc(s.chord)+'</span><span class="ly">'+esc(s.text===""?" ":s.text)+'</span></span>';
+    });
+    html+='</div>';
+    out.push(html);
+  });
+  return out.join("");
+}
+
+/* ============================ VIEW ============================ */
+const $=s=>document.querySelector(s);
+const main=$("#main"), backBtn=$("#backBtn"), brand=$("#brand"),
+      brandSub=$("#brandSub"), dock=$("#dock"), overlay=$("#overlay");
+let currentId=null, filter="";
+
+function firstLyric(body){
+  const l=body.split("\n").find(x=>{const t=x.trim();return t&&!/^\[.+\]$/.test(t)&&!/^(Title|Language|Meter|Theme|Chords)\b/i.test(t);});
+  return l?l.replace(/\[[^\]]+\]/g,"").trim():"";
+}
+
+function renderList(){
+  stopScroll();
+  currentId=null;
+  backBtn.classList.add("hidden");
+  brand.classList.remove("hidden");
+  dock.classList.remove("show");
+  brandSub.textContent=songs.length+" canzoni";
+  main.className="wrap";
+  main.innerHTML=
+    '<div class="listhead"><div class="kicker">Il mio songbook</div>'+
+    '<p>Tocca una canzone per leggerla e suonarla. Modifica il testo, aggiungi gli accordi, usa l\'autoscroll.</p></div>'+
+    '<div class="toolbar">'+
+      '<label class="search"><span class="mag">⌕</span><input id="q" type="search" placeholder="Cerca titolo o parola..." value="'+esc(filter)+'"></label>'+
+      '<button class="tbtn accent" id="newBtn">+ Nuova</button>'+
+      '<button class="tbtn" id="impBtn">Importa</button>'+
+      '<button class="tbtn" id="expBtn">Esporta</button>'+
+    '</div>'+
+    '<div id="listArea"></div>';
+  renderItems();
+  $("#q").addEventListener("input",e=>{filter=e.target.value;renderItems();});
+  $("#newBtn").addEventListener("click",newSong);
+  $("#impBtn").addEventListener("click",()=>$("#importFile").click());
+  $("#expBtn").addEventListener("click",exportData);
+}
+function renderItems(){
+  const area=$("#listArea");if(!area)return;
+  const q=filter.trim().toLowerCase();
+  const shown=songs.filter(s=>!q||s.title.toLowerCase().includes(q)||s.body.toLowerCase().includes(q));
+  if(!shown.length){area.innerHTML='<div class="empty">Nessuna canzone trovata.</div>';return;}
+  area.innerHTML='<ul class="songs">'+shown.map(s=>{
+    const ita=s.lang==="it"?'<span class="chip ita">ITA</span>':'';
+    const chd=hasChords(s.body)?'<span class="chip chd">♪ accordi</span>':'';
+    return '<li class="song" data-id="'+s.id+'"><div class="row1"><span class="title">'+esc(s.title)+'</span>'+ita+chd+'</div><div class="preview">'+esc(firstLyric(s.body))+'</div></li>';
+  }).join("")+'</ul>';
+  area.querySelectorAll("li.song").forEach(li=>li.addEventListener("click",()=>openSong(li.dataset.id)));
+}
+
+function openSong(id){
+  const s=songs.find(x=>x.id===id);if(!s)return;
+  currentId=id;
+  location.hash="#/"+id;
+  backBtn.classList.remove("hidden");
+  brand.classList.add("hidden");
+  window.scrollTo(0,0);
+  const meta=[];
+  if(s.lang==="it")meta.push("Italiano");else meta.push("English");
+  main.className="wrap reader";
+  main.innerHTML=
+    '<h2>'+esc(s.title)+'</h2>'+
+    '<div class="rmeta">'+meta.join(" · ")+'</div>'+
+    '<div class="subbar">'+
+      '<div class="grp"><button id="szDown" aria-label="Testo più piccolo">A−</button>'+
+      '<span class="lab" id="szLab">'+prefs.size+'</span>'+
+      '<button id="szUp" aria-label="Testo più grande">A+</button></div>'+
+      '<button class="tbtn" id="editBtn">✎ Modifica</button>'+
+    '</div>'+
+    '<div class="lyrics" id="lyrics">'+renderLyrics(s.body)+'</div>';
+  dock.classList.add("show");
+  $("#editBtn").addEventListener("click",()=>openEditor(id));
+  $("#szDown").addEventListener("click",()=>setSize(prefs.size-1));
+  $("#szUp").addEventListener("click",()=>setSize(prefs.size+1));
+}
+function setSize(v){
+  prefs.size=Math.max(15,Math.min(32,v));savePrefs();
+  document.documentElement.style.setProperty("--lyric",prefs.size+"px");
+  const lab=$("#szLab");if(lab)lab.textContent=prefs.size;
+}
+
+/* ============================ AUTOSCROLL ============================ */
+let scroll={on:false,raf:0,last:0,acc:0};
+const playBtn=$("#playBtn"), speedEl=$("#speed");
+function startScroll(){
+  if(scroll.on)return;
+  scroll.on=true;scroll.last=0;scroll.acc=0;
+  playBtn.textContent="❚❚";
+  scroll.raf=requestAnimationFrame(tick);
+}
+function stopScroll(){
+  scroll.on=false;playBtn.textContent="▶";
+  if(scroll.raf)cancelAnimationFrame(scroll.raf);
+}
+function tick(ts){
+  if(!scroll.on)return;
+  if(!scroll.last)scroll.last=ts;
+  const dt=Math.min(0.05,(ts-scroll.last)/1000);scroll.last=ts;
+  scroll.acc+=prefs.speed*dt;
+  if(scroll.acc>=1){
+    const px=Math.floor(scroll.acc);scroll.acc-=px;
+    const before=window.scrollY;
+    window.scrollBy(0,px);
+    if(Math.abs(window.scrollY-before)<0.5){stopScroll();return;}
+  }
+  scroll.raf=requestAnimationFrame(tick);
+}
+playBtn.addEventListener("click",()=>{scroll.on?stopScroll():startScroll();});
+speedEl.value=prefs.speed;
+speedEl.addEventListener("input",e=>{prefs.speed=+e.target.value;savePrefs();});
+
+/* ============================ EDITOR ============================ */
+let editingId=null;
+function openEditor(id){
+  stopScroll();
+  const s=songs.find(x=>x.id===id);if(!s)return;
+  editingId=id;
+  $("#edTitleH").textContent="Modifica canzone";
+  $("#edTitle").value=s.title;
+  $("#edBody").value=s.body;
+  const isDefault=DEFAULT_SONGS.some(d=>d.id===id);
+  $("#edRestore").classList.toggle("hidden",!isDefault);
+  $("#edDelete").classList.toggle("hidden",isDefault);
+  overlay.classList.add("show");
+  document.body.style.overflow="hidden";
+}
+function closeEditor(){overlay.classList.remove("show");document.body.style.overflow="";editingId=null;}
+$("#edCancel").addEventListener("click",closeEditor);
+$("#edSave").addEventListener("click",()=>{
+  const s=songs.find(x=>x.id===editingId);if(!s)return;
+  s.title=$("#edTitle").value.trim()||"Senza titolo";
+  s.body=$("#edBody").value;
+  saveSongs();closeEditor();openSong(s.id);toast("Salvato");
+});
+$("#edRestore").addEventListener("click",()=>{
+  const d=DEFAULT_SONGS.find(x=>x.id===editingId);if(!d)return;
+  if(!confirm("Ripristinare il testo originale di questa canzone?"))return;
+  $("#edTitle").value=d.title;$("#edBody").value=d.body;
+});
+$("#edDelete").addEventListener("click",()=>{
+  if(!confirm("Eliminare definitivamente questa canzone?"))return;
+  songs=songs.filter(x=>x.id!==editingId);saveSongs();closeEditor();renderList();location.hash="";toast("Eliminata");
+});
+function newSong(){
+  const id="song-"+Date.now();
+  songs.unshift({id:id,lang:"it",title:"Nuova canzone",body:"[Verse 1]\n"});
+  saveSongs();openEditor(id);
+}
+
+/* ============================ IMPORT / EXPORT ============================ */
+async function exportData(){
+  const payload=JSON.stringify({app:"my-songs",version:1,exportedAt:new Date().toISOString(),songs:songs},null,2);
+  const filename="my-songs-"+new Date().toISOString().slice(0,10)+".json";
+  if(window.claude&&window.claude.downloads){
+    try{await window.claude.downloads.save({filename:filename,data:payload});toast("Esportato");return;}
+    catch(e){if(e&&e.code==="declined"){return;}}
+  }
+  try{
+    const blob=new Blob([payload],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();
+    a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Esportato");
+  }catch(e){toast("Export non riuscito");}
+}
+$("#importFile").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const data=JSON.parse(r.result);
+      const arr=Array.isArray(data)?data:data.songs;
+      if(!Array.isArray(arr))throw 0;
+      const clean=arr.filter(x=>x&&x.id&&typeof x.title==="string"&&typeof x.body==="string")
+                     .map(x=>({id:String(x.id),lang:x.lang==="it"?"it":"en",title:x.title,body:x.body}));
+      if(!clean.length)throw 0;
+      if(!confirm("Importare "+clean.length+" canzoni? Sostituiranno quelle attuali su questo dispositivo."))return;
+      songs=clean;saveSongs();location.hash="";renderList();toast("Importate "+clean.length);
+    }catch(err){toast("File non valido");}
+  };
+  r.readAsText(f);
+  e.target.value="";
+});
+
+/* ============================ THEME + MISC ============================ */
+function applyTheme(t){
+  if(t==="auto")document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme",t);
+  const b=$("#themeBtn");
+  b.textContent=t==="dark"?"☾":t==="light"?"☀":"◐";
+}
+$("#themeBtn").addEventListener("click",()=>{
+  const order=["auto","light","dark"];
+  prefs.theme=order[(order.indexOf(prefs.theme)+1)%3];
+  savePrefs();applyTheme(prefs.theme);
+});
+let toastT=0;
+function toast(msg){
+  const t=$("#toast");t.textContent=msg;t.classList.add("show");
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),1800);
+}
+backBtn.addEventListener("click",()=>{location.hash="";});
+window.addEventListener("hashchange",route);
+function route(){
+  const h=location.hash.replace(/^#\/?/,"");
+  if(h&&songs.some(s=>s.id===h)){if(currentId!==h)openSong(h);}
+  else{renderList();}
+}
+
+/* ============================ BOOT ============================ */
+loadAll();
+applyTheme(prefs.theme);
+document.documentElement.style.setProperty("--lyric",prefs.size+"px");
+route();
+</script>
+</body>
+</html>
