@@ -1562,11 +1562,30 @@ function route(){
   renderList();
 }
 
+/* ============================ SYNC (repo = fonte di verità) ============================ */
+const DVKEY="mysongs.dataVersion";
+function syncFromRepo(){
+  fetch("data.json?cb="+Date.now(),{cache:"no-store"})
+    .then(r=>r.ok?r.json():null)
+    .then(d=>{
+      if(!d||typeof d.dataVersion!=="number"||!Array.isArray(d.songs))return;
+      let seen=0; try{seen=parseInt(localStorage.getItem(DVKEY)||"0",10)||0;}catch(e){}
+      if(d.dataVersion<=seen)return;
+      songs=d.songs;
+      if(Array.isArray(d.playlists))playlists=d.playlists;
+      saveSongs();savePlaylists();
+      try{localStorage.setItem(DVKEY,String(d.dataVersion));}catch(e){}
+      route();
+      if(seen>0)toast("Libreria aggiornata");
+    }).catch(()=>{});
+}
+
 /* ============================ BOOT ============================ */
 loadAll();
 applyTheme(prefs.theme);
 document.documentElement.style.setProperty("--lyric",prefs.size+"px");
 route();
+syncFromRepo();
 </script>
 </body>
 </html>
