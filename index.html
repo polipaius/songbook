@@ -46,18 +46,21 @@
     background:var(--bg);color:var(--text);font-family:var(--sans);
     -webkit-text-size-adjust:100%;line-height:1.5;
     min-height:100vh;
+    -webkit-tap-highlight-color:transparent;
   }
   a{color:inherit}
   button,input{font-family:inherit}
-  button{cursor:pointer}
-  .wrap{max-width:760px;margin:0 auto;padding:0 20px}
+  button{cursor:pointer;touch-action:manipulation}
+  .wrap{max-width:760px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}
 
   /* ---------- top bar ---------- */
   header.top{
-    position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 88%,transparent);
-    backdrop-filter:saturate(1.2) blur(10px);border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 90%,transparent);
+    backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);
+    border-bottom:1px solid var(--border);
+    padding-top:env(safe-area-inset-top);
   }
-  .top .wrap{display:flex;align-items:center;gap:12px;height:60px}
+  .top .wrap{display:flex;align-items:center;gap:12px;height:56px}
   .brand{display:flex;align-items:baseline;gap:10px;min-width:0}
   .brand .mark{font-size:20px}
   .brand h1{font-family:var(--serif);font-weight:600;font-size:22px;margin:0;letter-spacing:.2px}
