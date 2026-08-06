@@ -94,11 +94,11 @@
   .tbtn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
   :root[data-theme="dark"] .tbtn.accent,@media(prefers-color-scheme:dark){.tbtn.accent{color:#1a1508}}
 
-  ul.songs{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
-  @media(min-width:620px){ul.songs{grid-template-columns:1fr 1fr}}
+  ul.songs{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
+  @media(min-width:620px){ul.songs{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
   li.song{
     background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:15px 16px;
-    display:flex;flex-direction:column;gap:5px;transition:transform .1s ease,border-color .15s ease;
+    display:flex;flex-direction:column;gap:5px;min-width:0;transition:transform .1s ease,border-color .15s ease;
   }
   li.song:hover{border-color:var(--accent)}
   li.song:active{transform:scale(.99)}
@@ -197,7 +197,8 @@
   li.pl .plmeta{flex:1;min-width:0}
   li.pl .plname{font-family:var(--serif);font-size:18px;font-weight:600}
   li.pl .plcount{color:var(--dim);font-size:13px}
-  .plrow{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:10px 12px}
+  .pllist{display:grid;gap:8px;grid-template-columns:minmax(0,1fr)}
+  .plrow{display:flex;align-items:center;gap:11px;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:10px 12px}
   .plrow .num{font:700 13px/1 var(--mono);color:var(--accent);width:22px;text-align:right;flex:none}
   .plrow .pt{flex:1;min-width:0;cursor:pointer}
   .plrow .pt .t{font-family:var(--serif);font-size:17px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1258,7 +1259,7 @@ function openPlaylist(id){
   if(!valid.length){
     rows='<div class="empty">Playlist vuota.<br>Aggiungi le canzoni della scaletta.</div>';
   }else{
-    rows='<div style="display:grid;gap:8px">'+valid.map((sid,i)=>{
+    rows='<div class="pllist">'+valid.map((sid,i)=>{
       const s=songs.find(x=>x.id===sid);
       return '<div class="plrow">'+
         '<span class="num">'+(i+1)+'</span>'+
