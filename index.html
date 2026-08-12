@@ -159,7 +159,7 @@
   /* ---------- editor overlay ---------- */
   .overlay{position:fixed;inset:0;z-index:60;background:var(--bg);display:none;flex-direction:column}
   .overlay.show{display:flex}
-  .ohead{border-bottom:1px solid var(--border)}
+  .ohead{border-bottom:1px solid var(--border);padding-top:env(safe-area-inset-top)}
   .ohead .wrap{display:flex;align-items:center;gap:12px;height:60px}
   .ohead h3{font-family:var(--serif);font-size:18px;margin:0;flex:1}
   .obody{flex:1;overflow:auto}
@@ -171,7 +171,7 @@
     padding:12px 14px;font-size:16px;outline:none;
   }
   .field input:focus,.field textarea:focus{border-color:var(--accent)}
-  .field textarea{font-family:var(--mono);font-size:14px;line-height:1.7;min-height:52vh;resize:vertical;white-space:pre;overflow-wrap:normal;overflow-x:auto}
+  .field textarea{font-family:var(--mono);font-size:16px;line-height:1.7;min-height:52vh;resize:vertical;white-space:pre;overflow-wrap:normal;overflow-x:auto}
   .help{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--dim);margin-bottom:16px;line-height:1.6}
   .help code{font-family:var(--mono);color:var(--accent-ink);background:color-mix(in srgb,var(--accent) 14%,transparent);padding:1px 5px;border-radius:5px}
   .obtns{display:flex;flex-wrap:wrap;gap:10px}
